@@ -130,3 +130,33 @@ constructor() {
 }
 
 ```
+
+# Call API Using fetch
+    Load get call from constructor, OnInit life cycle or afterNextRender hook method.
+    Prefer using constructor
+
+```
+async loadAllCourses(): Promise<Course[]> {
+    const response = await fetch(`${this.env.apiRoot}/courses`);
+    const payload = await response.json();
+    return payload.courses;
+}
+
+const courses = await this.courseSerice.loadAllCourses();
+this.courses.set(courses);
+
+```
+
+# Angluar Http Client (2 way) - HttpClient
+
+```
+async loadAllCourses(): Promise<Course[]> {
+    const courses$ = this.http.get<GetCoursesResponse>(`${this.env.apiRoot}/courses`);
+    const payload = await firstValueFrom(courses$);
+    return payload.courses;
+}
+
+const courses = await this.courseSerice.loadAllCourses();
+this.courses.set(courses);
+
+```
