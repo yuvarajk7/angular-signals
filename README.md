@@ -160,3 +160,14 @@ const courses = await this.courseSerice.loadAllCourses();
 this.courses.set(courses);
 
 ```
+
+# Input parameter to the child component
+    Declare input varible : input.required()
+
+```
+child component
+courses = input.required<Course[]>();
+
+parent component
+<courses-card-list [courses]="beginnerCourses()" />
+```

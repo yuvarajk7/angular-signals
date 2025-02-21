@@ -23,17 +23,33 @@ export class HomeComponent {
 
     courseSerice = inject(CoursesService);
 
-    courses = signal<Course[]>([]);
+    #courses = signal<Course[]>([]);
+
+    beginnerCourses = computed(() => 
+        {
+            const courses = this.#courses();
+            return courses.filter(course => course.category === 'BEGINNER');
+        });
+
+    advancedCourses = computed(() => this.#courses().filter(course => course.category === 'ADVANCED'));
+
+    
 
     constructor() {
+
+        effect(() => {
+            console.log(`Beginner courses:`, this.beginnerCourses());
+            console.log(`Advanced courses:`, this.advancedCourses());
+        });
+
         this.loadCourses()
-            .then(() => console.log("Courses loaded", this.courses()));
+            .then(() => console.log("Courses loaded", this.#courses()));
     }
 
     async loadCourses() {
         try {
             const courses = await this.courseSerice.loadAllCourses();
-            this.courses.set(courses);
+            this.#courses.set(courses.sort(sortCoursesBySeqNo));
         }
         catch (error) {
             console.error(error);
