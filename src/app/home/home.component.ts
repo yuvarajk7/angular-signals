@@ -9,6 +9,7 @@ import {catchError, from, throwError} from "rxjs";
 import {toObservable, toSignal, outputToObservable, outputFromObservable} from "@angular/core/rxjs-interop";
 import { CoursesServiceWithFetch } from '../services/courses-fetch.service';
 import { openEditCourseDialog } from '../edit-course-dialog/edit-course-dialog.component';
+import { LoadingService } from '../loading/loading.service';
 
 @Component({
     selector: 'home',
@@ -22,6 +23,7 @@ import { openEditCourseDialog } from '../edit-course-dialog/edit-course-dialog.c
 })
 export class HomeComponent {
 
+    loadingService = inject(LoadingService);
     courseSerice = inject(CoursesService);
     dialog = inject(MatDialog);
 
@@ -56,7 +58,6 @@ export class HomeComponent {
         catch (error) {
             console.error(error);
         }
-        
     }
 
     onCourseUpdated(updatedCourse: Course) {

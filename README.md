@@ -289,3 +289,37 @@ const newCourses = courses.map(course => course.id === updatedCourse.id ? update
 this.#courses.set(newCourses);
 
 ```
+
+# Load indicator injected into Http Interceptor
+
+```
+export const loadingInterceptor : HttpInterceptorFn = 
+    (request: HttpRequest<unknown>, next: HttpHandlerFn) => {
+
+        if(request.context.get(SkipLoading)) {
+            return next(request);
+        }
+
+        const loadingService = inject(LoadingService);
+        loadingService.loadingOn();
+        return next(request)
+            .pipe(
+                finalize(() => {
+                    loadingService.loadingOff()
+                })
+            );
+}
+```
+
+# Skip loading indicator using Http Context
+
+```
+export const SkipLoading = new HttpContextToken(
+    () => false
+)
+
+const courses$ = this.http.get<GetCoursesResponse>(`${this.env.apiRoot}/courses`,
+      {
+         context: new HttpContext().set(SkipLoading, true)
+      });
+```
