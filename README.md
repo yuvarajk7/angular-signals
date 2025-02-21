@@ -323,3 +323,13 @@ const courses$ = this.http.get<GetCoursesResponse>(`${this.env.apiRoot}/courses`
          context: new HttpContext().set(SkipLoading, true)
       });
 ```
+
+# Add Http Interceptor into Application Config (app.config.ts)
+```
+provideHttpClient(
+    withFetch(),
+    withInterceptors([
+       loadingInterceptor
+    ])
+)
+```
