@@ -131,7 +131,7 @@ constructor() {
 
 ```
 
-# Call API Using fetch
+# Call API Using fetch - GET
     Load get call from constructor, OnInit life cycle or afterNextRender hook method.
     Prefer using constructor
 
@@ -147,7 +147,50 @@ this.courses.set(courses);
 
 ```
 
-# Angluar Http Client (2 way) - HttpClient
+# Call API Using fetch - POST
+
+```
+async createCourse(course: Partial<Course>): Promise<Course> {
+    const response = await fetch(`${this.env.apiRoot}/courses`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(course)
+    });
+    return await response.json();
+}
+
+```
+
+# Call API Using fetch - PUT
+
+```
+async saveCourse(courseId: string, 
+                    changes: Partial<Course>): Promise<Course> {
+    const response = await fetch(`${this.env.apiRoot}/courses/${courseId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(changes)
+    });
+    return await response.json();
+}
+
+```
+
+# Call API Using fetch - DELETE
+```
+async deleteCourse(courseId: string): Promise<void> {
+    await fetch(`${this.env.apiRoot}/courses/${courseId}`, {
+        method: "DELETE"
+    });
+}
+
+```
+
+# Angluar Http Client (2 way) - GET
 
 ```
 async loadAllCourses(): Promise<Course[]> {
@@ -160,6 +203,36 @@ const courses = await this.courseSerice.loadAllCourses();
 this.courses.set(courses);
 
 ```
+# Angluar Http Client (2 way) - POST
+
+```
+async createCourse(course: Partial<Course>): Promise<Course> {
+    const course$ = this.http.post<Course>(`${this.env.apiRoot}/courses`, course);
+    return await firstValueFrom(course$);
+  }
+
+```
+
+# Angluar Http Client (2 way) - PUT
+
+```
+async saveCourse(courseId: string, 
+                changes: Partial<Course>): Promise<Course> {
+    const course$ = this.http.put<Course>(`${this.env.apiRoot}/courses/${courseId}`, changes);
+    return await firstValueFrom(course$);
+  }
+
+```
+
+# Angluar Http Client (2 way) - DELETE
+
+```
+async deleteCourse(courseId: string): Promise<void> {
+    const delete$ = this.http.delete<void>(`${this.env.apiRoot}/courses/${courseId}`);
+    return await firstValueFrom(delete$);
+}
+
+```
 
 # Input parameter to the child component
     Declare input varible : input.required()
@@ -170,4 +243,49 @@ courses = input.required<Course[]>();
 
 parent component
 <courses-card-list [courses]="beginnerCourses()" />
+```
+
+# Output parameter to the parent component
+    Declare output variable: output
+    Emit the output to the parent
+
+```
+//child component
+courseUpdated = output<Course>();
+courseDeleted = output<string>();
+
+this.courseUpdated.emit(newCourse);
+this.courseDeleted.emit(course.id);
+
+//parent template
+<courses-card-list [courses]="beginnerCourses()" 
+                    (courseUpdated)="onCourseUpdated($event)"
+                    (courseDeleted)="onCourseDeleted($event)"/>
+```
+
+# Add new course to the existing course list
+
+```
+const newCourses = [...this.#courses(), newCourse];
+this.#courses.set(newCourses.sort(sortCoursesBySeqNo));
+
+```
+
+# Delete a course and delete from the list
+
+```
+await this.courseSerice.deleteCourse(courseId);
+const courses = this.#courses();
+const newCourses = courses.filter(course => course.id !== courseId);
+this.#courses.set(newCourses);
+
+```
+
+# Update a course and update the list
+
+```
+const courses = this.#courses();
+const newCourses = courses.map(course => course.id === updatedCourse.id ? updatedCourse : course);
+this.#courses.set(newCourses);
+
 ```
