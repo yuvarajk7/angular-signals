@@ -32,6 +32,10 @@ export class CoursesCardListComponent {
                 course
             }
         )
+        
+        if(!newCourse) {
+            return;
+        }
 
         console.log(`Course editied:`, newCourse);
         this.courseUpdated.emit(newCourse);

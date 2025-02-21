@@ -417,3 +417,38 @@ export const routes: Routes = [
 ]
 
 ```
+# Model Binding - Two way
+
+```
+// Parent component
+<course-category-combobox
+    label="Course category"
+    [(value)]="category" />
+
+category = signal<CourseCategory>("BEGINNER");
+
+const courseProps = this.form.value as Partial<Course>;
+courseProps.category = this.category();
+
+
+//Child Component
+<div class="form-control">
+
+  <label>{{label()}}</label>
+
+  <select [value]="value()"  #category
+        (change)="onCategoryChanged(category.value)">
+    <option value="BEGINNER">Beginners</option>
+    <option value="INTERMEDIATE">Intermediate</option>
+    <option value="ADVANCED">Advanced</option>
+  </select>
+
+</div>
+
+value = model.required<CourseCategory>();
+
+onCategoryChanged(category: string) {
+    this.value.set(category as CourseCategory);
+}
+
+```

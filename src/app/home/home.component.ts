@@ -89,6 +89,11 @@ export class HomeComponent {
                 mode: "create", 
                 title: "Create New Course"
             });
+        
+        if(!newCourse) {
+            return;
+        }
+        
         const newCourses = [...this.#courses(), newCourse];
         this.#courses.set(newCourses
             .sort(sortCoursesBySeqNo));
