@@ -333,3 +333,87 @@ provideHttpClient(
     ])
 )
 ```
+
+# Get and Set from Localstorage
+
+```
+localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+
+const json = localStorage.getItem(USER_STORAGE_KEY);
+if (json) {
+    const user = JSON.parse(json);
+    this.#userSignal.set(user);
+}
+```
+
+# Router - Navigate by URL
+
+```
+router = inject(Router);
+
+await this.router.navigateByUrl('/login');
+```
+
+# Forms
+
+```
+<div class="login-form" [formGroup]="form">
+
+    <h3>Login</h3>
+
+    <div class="form-control">
+      <label>Email:</label>
+      <input placeholder="Enter your email"
+             formControlName="email">
+    </div>
+    <div class="form-control">
+      <label>Password:</label>
+      <input type="password" placeholder="Enter your password"
+             formControlName="password">
+    </div>
+</div>
+<div class="form-actions">
+    <button class="btn" routerLink="/home">Home</button>
+    <button class="btn" (click)="onLogin()">
+      Login
+    </button>
+</div>
+
+fb = inject(FormBuilder);
+
+form = this.fb.group({
+    email: [''],
+    password: ['']
+});
+
+const {email, password} = this.form.value;
+
+```
+
+# Authentication Guard
+
+```
+export const isUserAuthenticated: CanActivateFn = 
+    (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+
+    const authService = inject(AuthService);
+    const router = inject(Router);
+
+    if(authService.isLoggedIn()) {
+        return true;
+    }
+    else {
+        return router.parseUrl('/login');
+    }
+}
+
+//app.route.ts
+export const routes: Routes = [
+  {
+    path: '',
+    component: HomeComponent,
+    canActivate: [isUserAuthenticated]
+  }
+]
+
+```
