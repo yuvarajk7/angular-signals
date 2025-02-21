@@ -24,6 +24,8 @@ import { LoadingService } from '../loading/loading.service';
 export class HomeComponent {
 
     loadingService = inject(LoadingService);
+    messagesService = inject(MessagesService);
+
     courseSerice = inject(CoursesService);
     dialog = inject(MatDialog);
 
@@ -56,6 +58,7 @@ export class HomeComponent {
             this.#courses.set(courses.sort(sortCoursesBySeqNo));
         }
         catch (error) {
+            this.messagesService.showMessage("Failed to load courses", "error");
             console.error(error);
         }
     }
