@@ -452,3 +452,59 @@ onCategoryChanged(category: string) {
 }
 
 ```
+
+# Communicate between componenet using ActivatedRoute and Resolver
+
+```
+\\ Course card list Component
+<button class="btn"
+        [routerLink]="['courses', course.id]">
+    VIEW COURSE
+</button>
+
+\\ Course component
+course = signal<Course | null>(null);
+lessons = signal<Lesson[]>([]);
+
+route = inject(ActivatedRoute);
+
+ngOnInit() {
+    this.course.set(this.route.snapshot.data["course"]);
+    this.lessons.set(this.route.snapshot.data["lessons"]);
+}
+
+//Course Resolver
+export const courseResolver: ResolveFn<Course | null> =
+    async(route: ActivatedRouteSnapshot, 
+        state: RouterStateSnapshot) => {
+        const courseId = route.paramMap.get("courseId");
+        if (!courseId) {
+            return null;
+        }
+        const coursesService = inject(CoursesService);
+        return coursesService.getCourseById(courseId);
+    }
+    
+//Lessons Resolver
+export const courseLessonsResolver: ResolveFn<Lesson[]> =
+  async (route: ActivatedRouteSnapshot,
+         state: RouterStateSnapshot) => {
+    const courseId = route.paramMap.get("courseId");
+    if (!courseId) {
+      return [];
+    }
+    const lessonsService = inject(LessonsService);
+    return lessonsService.loadLessons({courseId});
+  }
+
+//app.route.ts
+{
+    path: 'courses/:courseId',
+    component: CourseComponent,
+    canActivate: [isUserAuthenticated],
+    resolve: {
+      course: courseResolver,
+      lessons: courseLessonsResolver,
+    }
+}
+```
